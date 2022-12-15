@@ -3,23 +3,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Task {
   String? id;
   String body;
-  bool hasFinished;
+  bool isCompleted;
 
   Task({
     this.id,
     required this.body,
-    this.hasFinished = false,
+    this.isCompleted = false,
   });
 
   @override
   String toString() {
-    return 'Task{id: $id, body: $body, hasFinished: $hasFinished}';
+    return 'Task{id: $id, body: $body, hasFinished: $isCompleted}';
   }
 
   Map<String, dynamic> toFirestore() {
     return {
       'body': body,
-      'hasFinished': hasFinished,
+      'hasFinished': isCompleted,
     };
   }
 
@@ -31,7 +31,7 @@ class Task {
     return Task(
       id: snapshot.id,
       body: data?['body'],
-      hasFinished: data?['hasFinished'],
+      isCompleted: data?['hasFinished'],
     );
   }
 }

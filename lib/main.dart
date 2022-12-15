@@ -3,12 +3,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo/src/views/home_screen.dart';
 
 import 'firebase_options.dart';
 import 'src/logger.dart';
-import 'src/view_models/task_provider.dart';
+
+final helloWorldProvider = Provider((_) => 'Hello world');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,9 +17,8 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(
-    ChangeNotifierProvider<TaskViewModel>(
-      create: (_) => TaskViewModel()..initialize(),
-      child: const App(),
+    const ProviderScope(
+      child: App(),
     ),
   );
 }

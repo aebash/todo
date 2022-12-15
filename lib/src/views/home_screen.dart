@@ -1,22 +1,68 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:todo/src/view_models/task_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/task.dart';
 import '../logger.dart';
+import '../repositories/task_repository.dart';
 
-class HomeScreen extends StatefulWidget {
+final tasksProvider = StreamProvider.autoDispose<List<Task>>((ref) {
+  return TaskRepository().findNotDone();
+});
+
+enum FilterType {
+  all,
+  isCompleted,
+  active,
+}
+
+final filterTypeProvider = StateProvider<FilterType>(
+  (ref) => FilterType.all,
+);
+
+final displayTasksProvider = Provider.autoDispose<List<Task>>((ref) {
+  final filterType = ref.watch(filterTypeProvider);
+  final AsyncValue<List<Task>> tasks = ref.watch(tasksProvider);
+  switch (filterType) {
+    case FilterType.all:
+      return tasks.when(
+        loading: () => [],
+        error: (err, stack) => [],
+        data: (data) {
+          return data;
+        },
+      );
+    case FilterType.isCompleted:
+      return tasks.when(
+        loading: () => [],
+        error: (err, stack) => [],
+        data: (data) {
+          return data.where((task) => task.isCompleted).toList();
+        },
+      );
+    case FilterType.active:
+      return tasks.when(
+        loading: () => [],
+        error: (err, stack) => [],
+        data: (data) {
+          return data.where((task) => !task.isCompleted).toList();
+        },
+      );
+  }
+});
+
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     logger.d('_HomeScreenState build');
-    var viewModel = Provider.of<TaskViewModel>(context);
+    final displayTasks = ref.watch(displayTasksProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('task list'),
@@ -30,36 +76,23 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         label: const Icon(Icons.add),
       ),
-      body: StreamBuilder<List<Task>>(
-        stream: viewModel.tasks,
-        builder: (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
-          if (snapshot.hasError) {
-            return const Text('Something went wrong');
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Text("Loading");
-          }
-
-          return ListView(
-            children: snapshot.data!
-                .map((Task task) {
-                  return Dismissible(
-                    key: Key(task.id!),
-                    onDismissed: (direction) {
-                      logger.d('task: ${task.id} is dismissed.');
-                      viewModel.finish(task);
-                    },
-                    child: ListTile(
-                      title: Text(task.body),
-                      subtitle: Text(task.id!),
-                    ),
-                  );
-                })
-                .toList()
-                .cast(),
-          );
-        },
+      body: ListView(
+        children: displayTasks
+            .map((Task task) {
+              return Dismissible(
+                key: Key(task.id!),
+                onDismissed: (direction) {
+                  logger.d('task: ${task.id} is dismissed.');
+                  TaskRepository().finish(task);
+                },
+                child: ListTile(
+                  title: Text(task.body),
+                  subtitle: Text(task.id!),
+                ),
+              );
+            })
+            .toList()
+            .cast(),
       ),
     );
   }
@@ -80,8 +113,6 @@ class AddTaskModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TaskViewModel viewModel = Provider.of<TaskViewModel>(context);
-
     String body = '';
 
     return Scaffold(
@@ -91,7 +122,8 @@ class AddTaskModal extends StatelessWidget {
           IconButton(
             onPressed: () {
               Navigator.pop(context);
-              viewModel.add(Task(body: body));
+              // todo TaskRepository インスタンスの管理
+              TaskRepository().add(Task(body: body));
             },
             icon: const Icon(Icons.check),
           )
