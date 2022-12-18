@@ -5,10 +5,6 @@ import '../data/task.dart';
 import '../logger.dart';
 import '../repositories/task_repository.dart';
 
-final tasksProvider = StreamProvider.autoDispose<List<Task>>((ref) {
-  return TaskRepository().findNotDone();
-});
-
 enum FilterType {
   all,
   isCompleted,
@@ -19,53 +15,26 @@ final filterTypeProvider = StateProvider<FilterType>(
   (ref) => FilterType.all,
 );
 
-final displayTasksProvider = Provider.autoDispose<List<Task>>((ref) {
-  final filterType = ref.watch(filterTypeProvider);
-  final AsyncValue<List<Task>> tasks = ref.watch(tasksProvider);
-  switch (filterType) {
-    case FilterType.all:
-      return tasks.when(
-        loading: () => [],
-        error: (err, stack) => [],
-        data: (data) {
-          return data;
-        },
-      );
-    case FilterType.isCompleted:
-      return tasks.when(
-        loading: () => [],
-        error: (err, stack) => [],
-        data: (data) {
-          return data.where((task) => task.isCompleted).toList();
-        },
-      );
-    case FilterType.active:
-      return tasks.when(
-        loading: () => [],
-        error: (err, stack) => [],
-        data: (data) {
-          return data.where((task) => !task.isCompleted).toList();
-        },
-      );
-  }
-});
-
-class HomeScreen extends ConsumerStatefulWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends ConsumerState<HomeScreen> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     logger.d('_HomeScreenState build');
-    final displayTasks = ref.watch(displayTasksProvider);
+    TaskList state = ref.watch(tasksProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('task list'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.cloud_download),
+            tooltip: 'reload',
+            onPressed: () {
+              ref.read(tasksProvider.notifier).fetch();
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
@@ -77,7 +46,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         label: const Icon(Icons.add),
       ),
       body: ListView(
-        children: displayTasks
+        children: (state.tasks ?? [])
             .map((Task task) {
               return Dismissible(
                 key: Key(task.id!),
@@ -86,7 +55,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   TaskRepository().finish(task);
                 },
                 child: ListTile(
-                  title: Text(task.body),
+                  title: Text(task.body ?? ''),
                   subtitle: Text(task.id!),
                 ),
               );
@@ -108,11 +77,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-class AddTaskModal extends StatelessWidget {
+class AddTaskModal extends ConsumerWidget {
   const AddTaskModal({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     String body = '';
 
     return Scaffold(
@@ -122,8 +91,7 @@ class AddTaskModal extends StatelessWidget {
           IconButton(
             onPressed: () {
               Navigator.pop(context);
-              // todo TaskRepository インスタンスの管理
-              TaskRepository().add(Task(body: body));
+              ref.read(tasksProvider.notifier).addByText(body);
             },
             icon: const Icon(Icons.check),
           )

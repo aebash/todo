@@ -6,13 +6,24 @@ import '../logger.dart';
 class TaskRepository {
   CollectionReference ref = FirebaseFirestore.instance.collection('tasks');
 
+  Future<List<Task>> find() async {
+    var h = await ref
+        .withConverter(
+          fromFirestore: Task.fromFirestore,
+          toFirestore: (value, options) => value.toJson(),
+        )
+        .where('isCompleted', isEqualTo: false)
+        .get();
+    return h.docs.map((e) => e.data()).toList();
+  }
+
   Stream<List<Task>> findNotDone() {
     return ref
         .withConverter(
           fromFirestore: Task.fromFirestore,
-          toFirestore: (value, options) => value.toFirestore(),
+          toFirestore: (value, options) => value.toJson(),
         )
-        .where('hasFinished', isEqualTo: false)
+        .where('isCompleted', isEqualTo: false)
         .snapshots()
         .map((QuerySnapshot<Task> event) =>
             event.docs.map((e) => e.data()).toList());
@@ -23,12 +34,12 @@ class TaskRepository {
     ref
         .withConverter(
           fromFirestore: Task.fromFirestore,
-          toFirestore: (value, options) => value.toFirestore(),
+          toFirestore: (value, options) => value.toJson(),
         )
         .add(task);
   }
 
   void finish(Task task) {
-    ref.doc(task.id).update({'hasFinished': true});
+    ref.doc(task.id).update({'isCompleted': true});
   }
 }

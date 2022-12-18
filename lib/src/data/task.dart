@@ -1,27 +1,33 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:intl/intl.dart';
 
-class Task {
-  String? id;
-  String body;
-  bool isCompleted;
+import '../repositories/task_repository.dart';
 
-  Task({
-    this.id,
-    required this.body,
-    this.isCompleted = false,
-  });
+part 'task.freezed.dart';
+part 'task.g.dart';
 
-  @override
-  String toString() {
-    return 'Task{id: $id, body: $body, hasFinished: $isCompleted}';
-  }
+final formatter = DateFormat("yyyy-MM-dd HH:mm:ss");
 
-  Map<String, dynamic> toFirestore() {
-    return {
-      'body': body,
-      'hasFinished': isCompleted,
-    };
-  }
+/// flutter pub run build_runner build
+@freezed
+class Task with _$Task {
+  const factory Task({
+    String? id,
+    required String? body,
+    required bool isCompleted,
+    // required DateTime createAt,
+    // required DateTime updateAt,
+    // required DateTime deadline,
+    required String category,
+  }) = _Task;
+
+  factory Task.fromJson(Map<String, Object?> json) => _$TaskFromJson(json);
+
+  // Map<String, dynamic> toFirestore() {
+  //   return toJson();
+  // }
 
   factory Task.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -31,7 +37,50 @@ class Task {
     return Task(
       id: snapshot.id,
       body: data?['body'],
-      isCompleted: data?['hasFinished'],
+      isCompleted: data?['isCompleted'],
+      // createAt: formatter.parseStrict(data?['createAt']),
+      // updateAt: formatter.parseStrict(data?['updateAt']),
+      // deadline: formatter.parseStrict(data?['deadline']),
+      category: data?['category'],
     );
   }
 }
+
+@freezed
+class TaskList with _$TaskList {
+  const factory TaskList({
+    List<Task>? tasks,
+  }) = _TaskList;
+}
+
+// final streamProvider = StreamProvider<List<Task>>((ref) {
+//   return TaskRepository().findNotDone();
+// });
+
+class TasksViewModel extends StateNotifier<TaskList> {
+  TasksViewModel() : super(const TaskList());
+
+  final TaskRepository repository = TaskRepository();
+
+  Future<void> fetch() async {
+    state = state.copyWith(tasks: await repository.find());
+  }
+
+  void add(Task task) {
+    repository.add(task);
+  }
+
+  void addByText(String text) {
+    repository.add(Task(
+        body: text,
+        isCompleted: false,
+        // createAt: DateTime.now(),
+        // updateAt: DateTime.now(),
+        // deadline: DateTime.now().add(const Duration(days: 7)),
+        category: 'category'));
+  }
+}
+
+final tasksProvider = StateNotifierProvider<TasksViewModel, TaskList>((ref) {
+  return TasksViewModel()..fetch();
+});
