@@ -57,7 +57,6 @@ class HomeScreen extends ConsumerWidget {
                 },
                 child: ListTile(
                   title: Text(task.body ?? ''),
-                  subtitle: Text(task.id!),
                 ),
               );
             })
