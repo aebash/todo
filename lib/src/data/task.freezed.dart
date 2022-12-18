@@ -209,7 +209,9 @@ abstract class _Task implements Task {
 
 /// @nodoc
 mixin _$TaskList {
-  List<Task>? get tasks => throw _privateConstructorUsedError;
+  List<Task> get tasks => throw _privateConstructorUsedError;
+  FilterType get filterType => throw _privateConstructorUsedError;
+  List<Task> get allTasks => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $TaskListCopyWith<TaskList> get copyWith =>
@@ -221,7 +223,7 @@ abstract class $TaskListCopyWith<$Res> {
   factory $TaskListCopyWith(TaskList value, $Res Function(TaskList) then) =
       _$TaskListCopyWithImpl<$Res, TaskList>;
   @useResult
-  $Res call({List<Task>? tasks});
+  $Res call({List<Task> tasks, FilterType filterType, List<Task> allTasks});
 }
 
 /// @nodoc
@@ -237,13 +239,23 @@ class _$TaskListCopyWithImpl<$Res, $Val extends TaskList>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? tasks = freezed,
+    Object? tasks = null,
+    Object? filterType = null,
+    Object? allTasks = null,
   }) {
     return _then(_value.copyWith(
-      tasks: freezed == tasks
+      tasks: null == tasks
           ? _value.tasks
           : tasks // ignore: cast_nullable_to_non_nullable
-              as List<Task>?,
+              as List<Task>,
+      filterType: null == filterType
+          ? _value.filterType
+          : filterType // ignore: cast_nullable_to_non_nullable
+              as FilterType,
+      allTasks: null == allTasks
+          ? _value.allTasks
+          : allTasks // ignore: cast_nullable_to_non_nullable
+              as List<Task>,
     ) as $Val);
   }
 }
@@ -255,7 +267,7 @@ abstract class _$$_TaskListCopyWith<$Res> implements $TaskListCopyWith<$Res> {
       __$$_TaskListCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<Task>? tasks});
+  $Res call({List<Task> tasks, FilterType filterType, List<Task> allTasks});
 }
 
 /// @nodoc
@@ -269,13 +281,23 @@ class __$$_TaskListCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? tasks = freezed,
+    Object? tasks = null,
+    Object? filterType = null,
+    Object? allTasks = null,
   }) {
     return _then(_$_TaskList(
-      tasks: freezed == tasks
+      tasks: null == tasks
           ? _value._tasks
           : tasks // ignore: cast_nullable_to_non_nullable
-              as List<Task>?,
+              as List<Task>,
+      filterType: null == filterType
+          ? _value.filterType
+          : filterType // ignore: cast_nullable_to_non_nullable
+              as FilterType,
+      allTasks: null == allTasks
+          ? _value._allTasks
+          : allTasks // ignore: cast_nullable_to_non_nullable
+              as List<Task>,
     ));
   }
 }
@@ -283,21 +305,37 @@ class __$$_TaskListCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_TaskList implements _TaskList {
-  const _$_TaskList({final List<Task>? tasks}) : _tasks = tasks;
+  const _$_TaskList(
+      {final List<Task> tasks = const [],
+      this.filterType = FilterType.active,
+      final List<Task> allTasks = const []})
+      : _tasks = tasks,
+        _allTasks = allTasks;
 
-  final List<Task>? _tasks;
+  final List<Task> _tasks;
   @override
-  List<Task>? get tasks {
-    final value = _tasks;
-    if (value == null) return null;
+  @JsonKey()
+  List<Task> get tasks {
     if (_tasks is EqualUnmodifiableListView) return _tasks;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
+    return EqualUnmodifiableListView(_tasks);
+  }
+
+  @override
+  @JsonKey()
+  final FilterType filterType;
+  final List<Task> _allTasks;
+  @override
+  @JsonKey()
+  List<Task> get allTasks {
+    if (_allTasks is EqualUnmodifiableListView) return _allTasks;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_allTasks);
   }
 
   @override
   String toString() {
-    return 'TaskList(tasks: $tasks)';
+    return 'TaskList(tasks: $tasks, filterType: $filterType, allTasks: $allTasks)';
   }
 
   @override
@@ -305,12 +343,18 @@ class _$_TaskList implements _TaskList {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_TaskList &&
-            const DeepCollectionEquality().equals(other._tasks, _tasks));
+            const DeepCollectionEquality().equals(other._tasks, _tasks) &&
+            (identical(other.filterType, filterType) ||
+                other.filterType == filterType) &&
+            const DeepCollectionEquality().equals(other._allTasks, _allTasks));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_tasks));
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_tasks),
+      filterType,
+      const DeepCollectionEquality().hash(_allTasks));
 
   @JsonKey(ignore: true)
   @override
@@ -320,10 +364,17 @@ class _$_TaskList implements _TaskList {
 }
 
 abstract class _TaskList implements TaskList {
-  const factory _TaskList({final List<Task>? tasks}) = _$_TaskList;
+  const factory _TaskList(
+      {final List<Task> tasks,
+      final FilterType filterType,
+      final List<Task> allTasks}) = _$_TaskList;
 
   @override
-  List<Task>? get tasks;
+  List<Task> get tasks;
+  @override
+  FilterType get filterType;
+  @override
+  List<Task> get allTasks;
   @override
   @JsonKey(ignore: true)
   _$$_TaskListCopyWith<_$_TaskList> get copyWith =>

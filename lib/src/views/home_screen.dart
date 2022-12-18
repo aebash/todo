@@ -21,12 +21,13 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     logger.d('_HomeScreenState build');
-    TaskList state = ref.watch(tasksProvider);
+    List<Task> tasks = ref.watch(filteredTasksProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('task list'),
         actions: [
+          const FilterDropDown(),
           IconButton(
             icon: const Icon(Icons.cloud_download),
             tooltip: 'reload',
@@ -46,7 +47,7 @@ class HomeScreen extends ConsumerWidget {
         label: const Icon(Icons.add),
       ),
       body: ListView(
-        children: (state.tasks ?? [])
+        children: (tasks)
             .map((Task task) {
               return Dismissible(
                 key: Key(task.id!),
@@ -73,6 +74,35 @@ class HomeScreen extends ConsumerWidget {
     return MaterialPageRoute<void>(
       builder: (context) => const AddTaskModal(),
       fullscreenDialog: true,
+    );
+  }
+}
+
+class FilterDropDown extends ConsumerWidget {
+  const FilterDropDown({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return DropdownButton<FilterType>(
+      value: ref.watch(filterProvider),
+      onChanged: (FilterType? value) {
+        ref.read(filterProvider.notifier).state = value!;
+      },
+      items: FilterType.values
+          .map<DropdownMenuItem<FilterType>>((FilterType value) {
+        return DropdownMenuItem<FilterType>(
+          value: value,
+          child: Text(value.name),
+        );
+      }).toList(),
+      icon: const Icon(size: 0, Icons.arrow_downward),
+      elevation: 16,
+      style: const TextStyle(color: Colors.white),
+      underline: Container(
+        height: 2,
+        color: Colors.white,
+      ),
+      dropdownColor: Colors.grey,
     );
   }
 }

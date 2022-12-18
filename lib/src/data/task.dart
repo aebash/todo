@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
+import 'package:todo/src/views/home_screen.dart';
 
 import '../repositories/task_repository.dart';
 
@@ -49,7 +50,9 @@ class Task with _$Task {
 @freezed
 class TaskList with _$TaskList {
   const factory TaskList({
-    List<Task>? tasks,
+    @Default([]) List<Task> tasks,
+    @Default(FilterType.active) FilterType filterType,
+    @Default([]) List<Task> allTasks,
   }) = _TaskList;
 }
 
@@ -59,7 +62,6 @@ class TaskList with _$TaskList {
 
 class TasksViewModel extends StateNotifier<TaskList> {
   TasksViewModel() : super(const TaskList());
-
   final TaskRepository repository = TaskRepository();
 
   Future<void> fetch() async {
@@ -83,4 +85,20 @@ class TasksViewModel extends StateNotifier<TaskList> {
 
 final tasksProvider = StateNotifierProvider<TasksViewModel, TaskList>((ref) {
   return TasksViewModel()..fetch();
+});
+
+final filterProvider = StateProvider((ref) => FilterType.active);
+
+final filteredTasksProvider = Provider<List<Task>>((ref) {
+  final filter = ref.watch(filterProvider);
+  final tasks = ref.watch(tasksProvider);
+
+  switch (filter) {
+    case FilterType.all:
+      return tasks.tasks;
+    case FilterType.isCompleted:
+      return tasks.tasks.where((task) => task.isCompleted).toList();
+    case FilterType.active:
+      return tasks.tasks.where((task) => !task.isCompleted).toList();
+  }
 });

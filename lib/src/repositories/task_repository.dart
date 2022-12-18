@@ -7,14 +7,13 @@ class TaskRepository {
   CollectionReference ref = FirebaseFirestore.instance.collection('tasks');
 
   Future<List<Task>> find() async {
-    var h = await ref
+    var snapshot = await ref
         .withConverter(
           fromFirestore: Task.fromFirestore,
           toFirestore: (value, options) => value.toJson(),
         )
-        .where('isCompleted', isEqualTo: false)
         .get();
-    return h.docs.map((e) => e.data()).toList();
+    return snapshot.docs.map((e) => e.data()).toList();
   }
 
   Stream<List<Task>> findNotDone() {
