@@ -60,8 +60,8 @@ class TaskList with _$TaskList {
 //   return TaskRepository().findNotDone();
 // });
 
-class TasksViewModel extends StateNotifier<TaskList> {
-  TasksViewModel() : super(const TaskList());
+class TasksNotifier extends StateNotifier<TaskList> {
+  TasksNotifier() : super(const TaskList());
   final TaskRepository repository = TaskRepository();
 
   Future<void> fetch() async {
@@ -83,8 +83,8 @@ class TasksViewModel extends StateNotifier<TaskList> {
   }
 }
 
-final tasksProvider = StateNotifierProvider<TasksViewModel, TaskList>((ref) {
-  return TasksViewModel()..fetch();
+final tasksProvider = StateNotifierProvider<TasksNotifier, TaskList>((ref) {
+  return TasksNotifier()..fetch();
 });
 
 final filterProvider = StateProvider((ref) => FilterType.active);
