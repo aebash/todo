@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/task.dart';
@@ -23,9 +24,10 @@ class HomeScreen extends ConsumerWidget {
     logger.d('_HomeScreenState build');
     List<Task> tasks = ref.watch(filteredTasksProvider);
 
+    AppLocalizations localization = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('task list'),
+        title: Text(localization.taskList),
         actions: const [
           FilterDropDown(),
         ],
@@ -46,7 +48,7 @@ class HomeScreen extends ConsumerWidget {
                 key: Key(task.id!),
                 onDismissed: (direction) {
                   logger.d('task: ${task.id} is dismissed.');
-                  TaskRepository().finish(task);
+                  ref.read(taskRepositoryProvider).finish(task);
                 },
                 child: ListTile(
                   title: Text(task.body ?? ''),
@@ -104,11 +106,13 @@ class AddTaskModal extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    AppLocalizations localization = AppLocalizations.of(context)!;
+
     String body = '';
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('タスクを追加'),
+        title: Text(localization.addTask),
         actions: [
           IconButton(
             onPressed: () {
