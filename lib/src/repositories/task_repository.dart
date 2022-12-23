@@ -13,6 +13,7 @@ class TaskRepository {
           fromFirestore: Task.fromFirestore,
           toFirestore: (value, options) => value.toJson(),
         )
+        .orderBy('createAt', descending: true)
         .snapshots()
         .map((QuerySnapshot<Task> event) =>
             event.docs.map((e) => e.data()).toList());
@@ -23,7 +24,7 @@ class TaskRepository {
     ref
         .withConverter(
           fromFirestore: Task.fromFirestore,
-          toFirestore: (value, options) => value.toJson(),
+          toFirestore: (value, options) => value.toFirestore(),
         )
         .add(task);
   }
@@ -32,7 +33,7 @@ class TaskRepository {
     add(Task(
         body: text,
         isCompleted: false,
-        // createAt: DateTime.now(),
+        createAt: DateTime.now(),
         // updateAt: DateTime.now(),
         // deadline: DateTime.now().add(const Duration(days: 7)),
         category: 'category'));

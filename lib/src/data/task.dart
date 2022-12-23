@@ -18,17 +18,13 @@ class Task with _$Task {
     String? id,
     required String? body,
     required bool isCompleted,
-    // required DateTime createAt,
+    required DateTime createAt,
     // required DateTime updateAt,
     // required DateTime deadline,
     required String category,
   }) = _Task;
 
   factory Task.fromJson(Map<String, Object?> json) => _$TaskFromJson(json);
-
-  // Map<String, dynamic> toFirestore() {
-  //   return toJson();
-  // }
 
   factory Task.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -39,7 +35,7 @@ class Task with _$Task {
       id: snapshot.id,
       body: data?['body'],
       isCompleted: data?['isCompleted'],
-      // createAt: formatter.parseStrict(data?['createAt']),
+      createAt: data?['createAt'].toDate(),
       // updateAt: formatter.parseStrict(data?['updateAt']),
       // deadline: formatter.parseStrict(data?['deadline']),
       category: data?['category'],
@@ -47,13 +43,16 @@ class Task with _$Task {
   }
 }
 
-@freezed
-class TaskList with _$TaskList {
-  const factory TaskList({
-    @Default([]) List<Task> tasks,
-    @Default(FilterType.active) FilterType filterType,
-    @Default([]) List<Task> allTasks,
-  }) = _TaskList;
+extension TaskExt on Task {
+  Map<String, dynamic> toFirestore() {
+    return {
+      'id': id,
+      'body': body,
+      'isCompleted': isCompleted,
+      'createAt': Timestamp.fromDate(createAt),
+      'category': category
+    };
+  }
 }
 
 final tasksProvider = StreamProvider<List<Task>>((ref) {

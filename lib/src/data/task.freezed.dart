@@ -22,9 +22,9 @@ Task _$TaskFromJson(Map<String, dynamic> json) {
 mixin _$Task {
   String? get id => throw _privateConstructorUsedError;
   String? get body => throw _privateConstructorUsedError;
-  bool get isCompleted =>
-      throw _privateConstructorUsedError; // required DateTime createAt,
-// required DateTime updateAt,
+  bool get isCompleted => throw _privateConstructorUsedError;
+  DateTime get createAt =>
+      throw _privateConstructorUsedError; // required DateTime updateAt,
 // required DateTime deadline,
   String get category => throw _privateConstructorUsedError;
 
@@ -38,7 +38,12 @@ abstract class $TaskCopyWith<$Res> {
   factory $TaskCopyWith(Task value, $Res Function(Task) then) =
       _$TaskCopyWithImpl<$Res, Task>;
   @useResult
-  $Res call({String? id, String? body, bool isCompleted, String category});
+  $Res call(
+      {String? id,
+      String? body,
+      bool isCompleted,
+      DateTime createAt,
+      String category});
 }
 
 /// @nodoc
@@ -57,6 +62,7 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
     Object? id = freezed,
     Object? body = freezed,
     Object? isCompleted = null,
+    Object? createAt = null,
     Object? category = null,
   }) {
     return _then(_value.copyWith(
@@ -72,6 +78,10 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
           ? _value.isCompleted
           : isCompleted // ignore: cast_nullable_to_non_nullable
               as bool,
+      createAt: null == createAt
+          ? _value.createAt
+          : createAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
       category: null == category
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
@@ -86,7 +96,12 @@ abstract class _$$_TaskCopyWith<$Res> implements $TaskCopyWith<$Res> {
       __$$_TaskCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String? id, String? body, bool isCompleted, String category});
+  $Res call(
+      {String? id,
+      String? body,
+      bool isCompleted,
+      DateTime createAt,
+      String category});
 }
 
 /// @nodoc
@@ -101,6 +116,7 @@ class __$$_TaskCopyWithImpl<$Res> extends _$TaskCopyWithImpl<$Res, _$_Task>
     Object? id = freezed,
     Object? body = freezed,
     Object? isCompleted = null,
+    Object? createAt = null,
     Object? category = null,
   }) {
     return _then(_$_Task(
@@ -116,6 +132,10 @@ class __$$_TaskCopyWithImpl<$Res> extends _$TaskCopyWithImpl<$Res, _$_Task>
           ? _value.isCompleted
           : isCompleted // ignore: cast_nullable_to_non_nullable
               as bool,
+      createAt: null == createAt
+          ? _value.createAt
+          : createAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
       category: null == category
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
@@ -131,6 +151,7 @@ class _$_Task implements _Task {
       {this.id,
       required this.body,
       required this.isCompleted,
+      required this.createAt,
       required this.category});
 
   factory _$_Task.fromJson(Map<String, dynamic> json) => _$$_TaskFromJson(json);
@@ -141,7 +162,8 @@ class _$_Task implements _Task {
   final String? body;
   @override
   final bool isCompleted;
-// required DateTime createAt,
+  @override
+  final DateTime createAt;
 // required DateTime updateAt,
 // required DateTime deadline,
   @override
@@ -149,7 +171,7 @@ class _$_Task implements _Task {
 
   @override
   String toString() {
-    return 'Task(id: $id, body: $body, isCompleted: $isCompleted, category: $category)';
+    return 'Task(id: $id, body: $body, isCompleted: $isCompleted, createAt: $createAt, category: $category)';
   }
 
   @override
@@ -161,13 +183,16 @@ class _$_Task implements _Task {
             (identical(other.body, body) || other.body == body) &&
             (identical(other.isCompleted, isCompleted) ||
                 other.isCompleted == isCompleted) &&
+            (identical(other.createAt, createAt) ||
+                other.createAt == createAt) &&
             (identical(other.category, category) ||
                 other.category == category));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, body, isCompleted, category);
+  int get hashCode =>
+      Object.hash(runtimeType, id, body, isCompleted, createAt, category);
 
   @JsonKey(ignore: true)
   @override
@@ -188,6 +213,7 @@ abstract class _Task implements Task {
       {final String? id,
       required final String? body,
       required final bool isCompleted,
+      required final DateTime createAt,
       required final String category}) = _$_Task;
 
   factory _Task.fromJson(Map<String, dynamic> json) = _$_Task.fromJson;
@@ -198,185 +224,12 @@ abstract class _Task implements Task {
   String? get body;
   @override
   bool get isCompleted;
-  @override // required DateTime createAt,
-// required DateTime updateAt,
+  @override
+  DateTime get createAt;
+  @override // required DateTime updateAt,
 // required DateTime deadline,
   String get category;
   @override
   @JsonKey(ignore: true)
   _$$_TaskCopyWith<_$_Task> get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-mixin _$TaskList {
-  List<Task> get tasks => throw _privateConstructorUsedError;
-  FilterType get filterType => throw _privateConstructorUsedError;
-  List<Task> get allTasks => throw _privateConstructorUsedError;
-
-  @JsonKey(ignore: true)
-  $TaskListCopyWith<TaskList> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $TaskListCopyWith<$Res> {
-  factory $TaskListCopyWith(TaskList value, $Res Function(TaskList) then) =
-      _$TaskListCopyWithImpl<$Res, TaskList>;
-  @useResult
-  $Res call({List<Task> tasks, FilterType filterType, List<Task> allTasks});
-}
-
-/// @nodoc
-class _$TaskListCopyWithImpl<$Res, $Val extends TaskList>
-    implements $TaskListCopyWith<$Res> {
-  _$TaskListCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? tasks = null,
-    Object? filterType = null,
-    Object? allTasks = null,
-  }) {
-    return _then(_value.copyWith(
-      tasks: null == tasks
-          ? _value.tasks
-          : tasks // ignore: cast_nullable_to_non_nullable
-              as List<Task>,
-      filterType: null == filterType
-          ? _value.filterType
-          : filterType // ignore: cast_nullable_to_non_nullable
-              as FilterType,
-      allTasks: null == allTasks
-          ? _value.allTasks
-          : allTasks // ignore: cast_nullable_to_non_nullable
-              as List<Task>,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$_TaskListCopyWith<$Res> implements $TaskListCopyWith<$Res> {
-  factory _$$_TaskListCopyWith(
-          _$_TaskList value, $Res Function(_$_TaskList) then) =
-      __$$_TaskListCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({List<Task> tasks, FilterType filterType, List<Task> allTasks});
-}
-
-/// @nodoc
-class __$$_TaskListCopyWithImpl<$Res>
-    extends _$TaskListCopyWithImpl<$Res, _$_TaskList>
-    implements _$$_TaskListCopyWith<$Res> {
-  __$$_TaskListCopyWithImpl(
-      _$_TaskList _value, $Res Function(_$_TaskList) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? tasks = null,
-    Object? filterType = null,
-    Object? allTasks = null,
-  }) {
-    return _then(_$_TaskList(
-      tasks: null == tasks
-          ? _value._tasks
-          : tasks // ignore: cast_nullable_to_non_nullable
-              as List<Task>,
-      filterType: null == filterType
-          ? _value.filterType
-          : filterType // ignore: cast_nullable_to_non_nullable
-              as FilterType,
-      allTasks: null == allTasks
-          ? _value._allTasks
-          : allTasks // ignore: cast_nullable_to_non_nullable
-              as List<Task>,
-    ));
-  }
-}
-
-/// @nodoc
-
-class _$_TaskList implements _TaskList {
-  const _$_TaskList(
-      {final List<Task> tasks = const [],
-      this.filterType = FilterType.active,
-      final List<Task> allTasks = const []})
-      : _tasks = tasks,
-        _allTasks = allTasks;
-
-  final List<Task> _tasks;
-  @override
-  @JsonKey()
-  List<Task> get tasks {
-    if (_tasks is EqualUnmodifiableListView) return _tasks;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_tasks);
-  }
-
-  @override
-  @JsonKey()
-  final FilterType filterType;
-  final List<Task> _allTasks;
-  @override
-  @JsonKey()
-  List<Task> get allTasks {
-    if (_allTasks is EqualUnmodifiableListView) return _allTasks;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_allTasks);
-  }
-
-  @override
-  String toString() {
-    return 'TaskList(tasks: $tasks, filterType: $filterType, allTasks: $allTasks)';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$_TaskList &&
-            const DeepCollectionEquality().equals(other._tasks, _tasks) &&
-            (identical(other.filterType, filterType) ||
-                other.filterType == filterType) &&
-            const DeepCollectionEquality().equals(other._allTasks, _allTasks));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(_tasks),
-      filterType,
-      const DeepCollectionEquality().hash(_allTasks));
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$_TaskListCopyWith<_$_TaskList> get copyWith =>
-      __$$_TaskListCopyWithImpl<_$_TaskList>(this, _$identity);
-}
-
-abstract class _TaskList implements TaskList {
-  const factory _TaskList(
-      {final List<Task> tasks,
-      final FilterType filterType,
-      final List<Task> allTasks}) = _$_TaskList;
-
-  @override
-  List<Task> get tasks;
-  @override
-  FilterType get filterType;
-  @override
-  List<Task> get allTasks;
-  @override
-  @JsonKey(ignore: true)
-  _$$_TaskListCopyWith<_$_TaskList> get copyWith =>
-      throw _privateConstructorUsedError;
 }
