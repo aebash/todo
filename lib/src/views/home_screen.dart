@@ -26,15 +26,8 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('task list'),
-        actions: [
-          const FilterDropDown(),
-          IconButton(
-            icon: const Icon(Icons.cloud_download),
-            tooltip: 'reload',
-            onPressed: () {
-              ref.read(tasksProvider.notifier).fetch();
-            },
-          ),
+        actions: const [
+          FilterDropDown(),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -120,7 +113,7 @@ class AddTaskModal extends ConsumerWidget {
           IconButton(
             onPressed: () {
               Navigator.pop(context);
-              ref.read(tasksProvider.notifier).addByText(body);
+              ref.read(taskRepositoryProvider).addByText(body);
             },
             icon: const Icon(Icons.check),
           )

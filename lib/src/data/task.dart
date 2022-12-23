@@ -56,49 +56,23 @@ class TaskList with _$TaskList {
   }) = _TaskList;
 }
 
-// final streamProvider = StreamProvider<List<Task>>((ref) {
-//   return TaskRepository().findNotDone();
-// });
-
-class TasksNotifier extends StateNotifier<TaskList> {
-  TasksNotifier() : super(const TaskList());
-  final TaskRepository repository = TaskRepository();
-
-  Future<void> fetch() async {
-    state = state.copyWith(tasks: await repository.find());
-  }
-
-  void add(Task task) {
-    repository.add(task);
-  }
-
-  void addByText(String text) {
-    repository.add(Task(
-        body: text,
-        isCompleted: false,
-        // createAt: DateTime.now(),
-        // updateAt: DateTime.now(),
-        // deadline: DateTime.now().add(const Duration(days: 7)),
-        category: 'category'));
-  }
-}
-
-final tasksProvider = StateNotifierProvider<TasksNotifier, TaskList>((ref) {
-  return TasksNotifier()..fetch();
+final tasksProvider = StreamProvider<List<Task>>((ref) {
+  var repository = ref.watch(taskRepositoryProvider);
+  return repository.find();
 });
 
 final filterProvider = StateProvider((ref) => FilterType.active);
 
 final filteredTasksProvider = Provider<List<Task>>((ref) {
   final filter = ref.watch(filterProvider);
-  final tasks = ref.watch(tasksProvider);
+  final List<Task> tasks = ref.watch(tasksProvider).value ?? [];
 
   switch (filter) {
     case FilterType.all:
-      return tasks.tasks;
+      return tasks;
     case FilterType.isCompleted:
-      return tasks.tasks.where((task) => task.isCompleted).toList();
+      return tasks.where((task) => task.isCompleted).toList();
     case FilterType.active:
-      return tasks.tasks.where((task) => !task.isCompleted).toList();
+      return tasks.where((task) => !task.isCompleted).toList();
   }
 });
