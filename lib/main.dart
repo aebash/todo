@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:todo/src/views/home_screen.dart';
 
 import 'firebase_options.dart';
 import 'src/logger.dart';
+import 'src/views/authentication_screen.dart';
+import 'src/views/home_screen.dart';
 
 final helloWorldProvider = Provider((_) => 'Hello world');
 
@@ -28,36 +29,32 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user == null) {
-        logger.d('User is currently signed out!');
-      } else {
-        logger.d('User is signed in!');
-      }
-    });
+    logger.d(FirebaseAuth.instance.currentUser);
 
-    try {
-      FirebaseAuth.instance.signInAnonymously();
-      logger.d("Signed in with temporary account.");
-    } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case "operation-not-allowed":
-          logger.d("Anonymous auth hasn't been enabled for this project.");
-          break;
-        default:
-          logger.d("Unknown error.");
-      }
-    }
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Template App',
-      localizationsDelegates: [
+      localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: HomeScreen(),
+      // home: const AuthenticationScreen(),
+
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          logger.d('authStateChanges, $snapshot');
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const SizedBox();
+          }
+          if (snapshot.hasData) {
+            return const HomeScreen();
+          }
+          return const AuthenticationScreen();
+        },
+      ),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:todo/src/service/authentication_service.dart';
 
 import '../data/task.dart';
 import '../logger.dart';
@@ -57,6 +58,25 @@ class HomeScreen extends ConsumerWidget {
             })
             .toList()
             .cast(),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: <Widget>[
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text('Drawer Header'),
+            ),
+            ListTile(
+              title: Text(localization.signOut),
+              trailing: const Icon(Icons.outbound),
+              onTap: () {
+                AuthenticationService.signOut();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

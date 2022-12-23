@@ -1,6 +1,9 @@
 {
     "addTask": "タスクを追加",
     "taskList": "task list",
+    "signIn": "sign in",
+    "signOut": "sign out",
+
 
     "helloWorld": "こんにちは世界！",
     "@helloWorld": {
